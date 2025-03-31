@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Request Form</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    label, input, textarea, button { display: block; margin-bottom: 10px; }
+    #response { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h2>Submit Your Question</h2>
+  <form id="apiForm">
+    <label for="question">Question:</label>
+    <textarea id="question" name="question" rows="4" required></textarea>
+    
+    <label for="file">Choose File 1 (Optional):</label>
+    <input type="file" id="file" name="file" accept="*" />
+    
+    <label for="file2">Choose File 2 (Optional):</label>
+    <input type="file" id="file2" name="file2" accept="*" />
+    
+    <button type="submit">Submit</button>
+  </form>
+  
+  <h3>Response:</h3>
+  <div id="response"></div>
+  
+  <script>
+    document.getElementById("apiForm").addEventListener("submit", async function(event) {
+      event.preventDefault();
+      
+      const formData = new FormData();
+      formData.append("question", document.getElementById("question").value);
+      
+      // Append each file if available with the expected keys.
+      const file1 = document.getElementById("file").files[0];
+      const file2 = document.getElementById("file2").files[0];
+      if (file1) formData.append("file", file1);
+      if (file2) formData.append("file2", file2);
+      
+      const responseDiv = document.getElementById("response");
+      responseDiv.innerHTML = "<em>Sending request...</em>";
+      
+      try {
+        const response = await fetch("https://bafc-2406-7400-10a-dbc4-b480-ad93-847c-3351.ngrok-free.app/api/", {
+          method: "POST",
+          body: formData
+        });
+        const result = await response.json();
+        responseDiv.innerHTML = `<pre>${JSON.stringify(result, null, 2)}</pre>`;
+      } catch (error) {
+        responseDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+      }
+    });
+  </script>
+</body>
+</html>
